@@ -79,25 +79,7 @@ If you just want to run the notebooks without CoCo generating them:
 
 ## Architecture
 
-```
-TRANSACTIONS (1M rows)          DAILY_REVENUE (5 years)
-        |                                |
-    [EDA + Feature Eng]             [EDA + Feature Eng]
-        |                                |
-    [XGBoost / RF / LR]            [XGBoost / RF / Ridge]
-        |                                |
-    [Snowflake Model Registry]     [Snowflake Model Registry]
-        |                                |
-    [Warehouse Inference]          [Warehouse Inference]
-        |                                |
-    [FRAUD_PREDICTIONS]            [REVENUE_FORECAST]
-        |                                |
-    [Drift Detection + KS Test]    [Drift Detection + KS Test]
-        |                                |
-    [Task: Daily Monitoring]       [Task: Daily Monitoring]
-        |                                |
-    [Alert: Drift Notification]    [Alert: MAPE Threshold]
-```
+![Architecture Diagram](coco_ds.png)
 
 ## Tech Stack
 
