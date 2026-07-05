@@ -23,14 +23,59 @@ A data scientist can build a complete ML lifecycle using only natural language p
 | `mlops_pipeline.ipynb` | Phase 2 — Fraud detection MLOps (classification) |
 | `forecasting_pipeline.ipynb` | Phase 3 — Revenue forecasting MLOps (regression) |
 
-## How to Use
+## How to Run (Step-by-Step)
 
-1. Open **Cortex Code** in Snowflake (Snowsight Notebooks or VS Code)
-2. Copy the **Phase 1** prompt from `PROMPTS.md` — this creates the database, warehouse, and synthetic data
-3. Copy the **Phase 2** prompt — CoCo generates the full fraud detection notebook
-4. Copy the **Phase 3** prompt — CoCo generates the revenue forecasting notebook
+### Prerequisites
 
-Each prompt produces a complete, runnable notebook in one shot.
+- A Snowflake account with `ACCOUNTADMIN` role (or a role with CREATE DATABASE/WAREHOUSE privileges)
+- Access to **Cortex Code** — available in:
+  - **Snowsight Notebooks** (browser-based, no setup needed)
+  - **VS Code / Cursor** with the Snowflake extension
+
+### Option A: Run via Snowsight Notebooks (Recommended)
+
+1. **Open Snowsight** — navigate to your Snowflake account in the browser
+2. **Open CoCo** — click the Cortex Code (AI) icon in the left sidebar of a Notebook
+3. **Run Phase 1 (Setup):**
+   - Create a new SQL Worksheet
+   - Copy the **Phase 1** prompt from [`PROMPTS.md`](./PROMPTS.md) into CoCo's chat
+   - CoCo will generate and execute SQL to create the database, warehouse, and 2 tables with synthetic data
+   - Verify: `SELECT COUNT(*) FROM COCO_DS_DEMO.PUBLIC.TRANSACTIONS` should return 1,000,000
+4. **Run Phase 2 (Fraud Detection):**
+   - Create a new Notebook in Snowsight
+   - Copy the **Phase 2** prompt from `PROMPTS.md` into CoCo's chat
+   - CoCo generates the entire notebook — EDA, feature engineering, training, registry, scoring, monitoring
+   - Click "Run All" or execute cells sequentially
+5. **Run Phase 3 (Forecasting):**
+   - Create another Notebook
+   - Copy the **Phase 3** prompt into CoCo
+   - Same flow — full regression pipeline with drift monitoring
+
+### Option B: Run via VS Code / Cursor
+
+1. **Install** the [Snowflake Extension for VS Code](https://marketplace.visualstudio.com/items?itemName=snowflake.snowflake-vsc)
+2. **Connect** to your Snowflake account via the extension
+3. **Open Cortex Code** — use the CoCo chat panel in the extension
+4. Follow the same Phase 1 → 2 → 3 prompt flow as above
+
+### Option C: Run the Pre-built Notebooks Directly
+
+If you just want to run the notebooks without CoCo generating them:
+
+1. Complete Phase 1 setup (create DB + tables) by running the SQL from `PROMPTS.md` Phase 1
+2. Upload `mlops_pipeline.ipynb` and `forecasting_pipeline.ipynb` to Snowsight Notebooks
+3. Run all cells — they will execute against your `COCO_DS_DEMO` database
+
+### Tips
+
+- **Runtime:** Phase 2 takes ~3-5 minutes to run (training on 1M rows). Phase 3 is faster (~1 min).
+- **Warehouse size:** Medium is sufficient. Increase to Large if training is slow.
+- **CoCo generation:** Each prompt typically produces the full notebook in 30-60 seconds.
+- **Re-running:** The notebooks are idempotent — they overwrite tables/models on re-run.
+- **Monitoring Task:** The created Task runs daily at 6 AM UTC. Suspend it after the demo with:
+  ```sql
+  ALTER TASK COCO_DS_DEMO.PUBLIC.DAILY_MODEL_MONITORING_TASK SUSPEND;
+  ```
 
 ## Architecture
 
